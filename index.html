@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Nomad Academia: Vocabulary & Quiz</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+    header { background: #004466; color: white; padding: 1rem; text-align: center; }
+    .container { max-width: 800px; margin: 2rem auto; padding: 1rem; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    button { padding: 0.5rem 1rem; margin-bottom: 1rem; cursor: pointer; }
+    .quiz, .vocab { display: none; }
+    .word { font-size: 1.5rem; font-weight: bold; color: #00334d; }
+    .question { margin: 1rem 0; }
+    .option { margin: 0.5rem 0; }
+    .option button { width: 100%; padding: 0.75rem; font-size: 1rem; border-radius: 5px; border: 1px solid #ccc; }
+    .feedback { margin-top: 1rem; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Nomad Academia</h1>
+    <p>Advanced Adjectives – Vocabulary & Quiz Mode</p>
+  </header>
+  <div class="container">
+    <button onclick="toggleMode()">Switch to Quiz Mode</button>
+    
+    <div class="vocab" id="vocabView">
+      <h2>Vocabulary List</h2>
+      <ul>
+        <li><strong>Timely</strong>: Happening at the best possible moment</li>
+        <li><strong>Skeptical</strong>: Doubting that something is true or useful</li>
+        <li><strong>Reminiscent</strong>: Awakening memories of something similar</li>
+        <li><strong>Whimsical</strong>: Spontaneously fanciful or playful</li>
+      </ul>
+    </div>
+
+    <div class="quiz" id="quizView">
+      <div class="question" id="questionText"></div>
+      <div id="optionsContainer"></div>
+      <div class="feedback" id="feedback"></div>
+      <button onclick="nextQuestion()">Next Question</button>
+    </div>
+  </div>
+
+  <script>
+    const vocabData = [{'word': 'Timely', 'meaning': 'Happening at the best possible moment'}, {'word': 'Skeptical', 'meaning': 'Doubting that something is true or useful'}, {'word': 'Reminiscent', 'meaning': 'Awakening memories of something similar'}, {'word': 'Whimsical', 'meaning': 'Spontaneously fanciful or playful'}];
+    let currentQuestion = {{}};
+    let usedQuestions = [];
+
+    function toggleMode() {{
+      const quiz = document.getElementById('quizView');
+      const vocab = document.getElementById('vocabView');
+      const button = document.querySelector('button');
+      if (quiz.style.display === 'none') {{
+        quiz.style.display = 'block';
+        vocab.style.display = 'none';
+        button.innerText = 'Switch to Vocabulary Mode';
+        nextQuestion();
+      }} else {{
+        quiz.style.display = 'none';
+        vocab.style.display = 'block';
+        button.innerText = 'Switch to Quiz Mode';
+      }}
+    }}
+
+    function nextQuestion() {{
+      document.getElementById('feedback').innerText = '';
+      if (usedQuestions.length === vocabData.length) usedQuestions = [];
+      let q;
+      do {{
+        q = vocabData[Math.floor(Math.random() * vocabData.length)];
+      }} while (usedQuestions.includes(q.word));
+      usedQuestions.push(q.word);
+      currentQuestion = q;
+
+      document.getElementById('questionText').innerText = `What word means: "${q.meaning}"`;
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+
+      let options = [q.word];
+      while (options.length < 4) {{
+        const rand = vocabData[Math.floor(Math.random() * vocabData.length)].word;
+        if (!options.includes(rand)) options.push(rand);
+      }}
+      options = options.sort(() => Math.random() - 0.5);
+      options.forEach(option => {{
+        const btn = document.createElement('button');
+        btn.innerText = option;
+        btn.onclick = () => checkAnswer(option);
+        const div = document.createElement('div');
+        div.className = 'option';
+        div.appendChild(btn);
+        optionsContainer.appendChild(div);
+      }});
+    }}
+
+    function checkAnswer(selected) {{
+      const feedback = document.getElementById('feedback');
+      if (selected === currentQuestion.word) {{
+        feedback.innerText = '✅ Correct!';
+        feedback.style.color = 'green';
+      }} else {{
+        feedback.innerText = `❌ Incorrect. The correct word was: ${currentQuestion.word}`;
+        feedback.style.color = 'red';
+      }}
+    }}
+
+    document.addEventListener('DOMContentLoaded', () => {{
+      document.getElementById('vocabView').style.display = 'block';
+    }});
+  </script>
+</body>
+</html>
