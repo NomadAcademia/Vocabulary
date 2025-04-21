@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
-<html lang='en'>
+<html lang="en">
 <head>
-  <meta charset='UTF-8'>
-  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nomad Academia: Vocabulary & Quiz</title>
   <style>
     body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
@@ -24,7 +23,7 @@
     <p>Advanced Adjectives – Vocabulary & Quiz Mode</p>
   </header>
   <div class="container">
-    <button onclick="toggleMode()">Switch to Quiz Mode</button>
+    <button id="toggleBtn">Switch to Quiz Mode</button>
     
     <div class="vocab" id="vocabView">
       <h2>Vocabulary List</h2>
@@ -40,38 +39,50 @@
       <div class="question" id="questionText"></div>
       <div id="optionsContainer"></div>
       <div class="feedback" id="feedback"></div>
-      <button onclick="nextQuestion()">Next Question</button>
+      <button id="nextBtn">Next Question</button>
     </div>
   </div>
 
   <script>
-    const vocabData = [{'word': 'Timely', 'meaning': 'Happening at the best possible moment'}, {'word': 'Skeptical', 'meaning': 'Doubting that something is true or useful'}, {'word': 'Reminiscent', 'meaning': 'Awakening memories of something similar'}, {'word': 'Whimsical', 'meaning': 'Spontaneously fanciful or playful'}];
-    let currentQuestion = {{}};
+    const vocabData = [
+      { word: 'Timely', meaning: 'Happening at the best possible moment' },
+      { word: 'Skeptical', meaning: 'Doubting that something is true or useful' },
+      { word: 'Reminiscent', meaning: 'Awakening memories of something similar' },
+      { word: 'Whimsical', meaning: 'Spontaneously fanciful or playful' }
+    ];
+    let currentQuestion = {};     // <-- normal object, not {{}}
     let usedQuestions = [];
 
-    function toggleMode() {{
-      const quiz = document.getElementById('quizView');
-      const vocab = document.getElementById('vocabView');
-      const button = document.querySelector('button');
-      if (quiz.style.display === 'none') {{
-        quiz.style.display = 'block';
-        vocab.style.display = 'none';
-        button.innerText = 'Switch to Vocabulary Mode';
-        nextQuestion();
-      }} else {{
-        quiz.style.display = 'none';
-        vocab.style.display = 'block';
-        button.innerText = 'Switch to Quiz Mode';
-      }}
-    }}
+    const toggleBtn = document.getElementById('toggleBtn');
+    const nextBtn   = document.getElementById('nextBtn');
+    const quizView  = document.getElementById('quizView');
+    const vocabView = document.getElementById('vocabView');
+    const feedback  = document.getElementById('feedback');
 
-    function nextQuestion() {{
-      document.getElementById('feedback').innerText = '';
+    toggleBtn.addEventListener('click', toggleMode);
+    nextBtn.addEventListener('click', nextQuestion);
+
+    function toggleMode() {
+      if (quizView.style.display === 'block') {
+        quizView.style.display = 'none';
+        vocabView.style.display = 'block';
+        toggleBtn.innerText = 'Switch to Quiz Mode';
+      } else {
+        vocabView.style.display = 'none';
+        quizView.style.display = 'block';
+        toggleBtn.innerText = 'Switch to Vocabulary Mode';
+        nextQuestion();
+      }
+      feedback.innerText = '';
+    }
+
+    function nextQuestion() {
+      feedback.innerText = '';
       if (usedQuestions.length === vocabData.length) usedQuestions = [];
       let q;
-      do {{
+      do {
         q = vocabData[Math.floor(Math.random() * vocabData.length)];
-      }} while (usedQuestions.includes(q.word));
+      } while (usedQuestions.includes(q.word));
       usedQuestions.push(q.word);
       currentQuestion = q;
 
@@ -80,12 +91,11 @@
       optionsContainer.innerHTML = '';
 
       let options = [q.word];
-      while (options.length < 4) {{
+      while (options.length < 4) {
         const rand = vocabData[Math.floor(Math.random() * vocabData.length)].word;
         if (!options.includes(rand)) options.push(rand);
-      }}
-      options = options.sort(() => Math.random() - 0.5);
-      options.forEach(option => {{
+      }
+      options.sort(() => Math.random() - 0.5).forEach(option => {
         const btn = document.createElement('button');
         btn.innerText = option;
         btn.onclick = () => checkAnswer(option);
@@ -93,23 +103,22 @@
         div.className = 'option';
         div.appendChild(btn);
         optionsContainer.appendChild(div);
-      }});
-    }}
+      });
+    }
 
-    function checkAnswer(selected) {{
-      const feedback = document.getElementById('feedback');
-      if (selected === currentQuestion.word) {{
+    function checkAnswer(selected) {
+      if (selected === currentQuestion.word) {
         feedback.innerText = '✅ Correct!';
         feedback.style.color = 'green';
-      }} else {{
+      } else {
         feedback.innerText = `❌ Incorrect. The correct word was: ${currentQuestion.word}`;
         feedback.style.color = 'red';
-      }}
-    }}
+      }
+    }
 
-    document.addEventListener('DOMContentLoaded', () => {{
-      document.getElementById('vocabView').style.display = 'block';
-    }});
+    document.addEventListener('DOMContentLoaded', () => {
+      vocabView.style.display = 'block';
+    });
   </script>
 </body>
 </html>
